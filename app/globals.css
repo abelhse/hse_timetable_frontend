@@ -1,0 +1,104 @@
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* https://chatgpt.com/c/670a9418-8e0c-800d-a4ae-49f571fada5d */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.body {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  /* Full height of the viewport */
+  overflow: hidden;
+  /* Prevent body scrolling */
+}
+
+.search {
+  padding: 20px;
+  border-bottom: 1px solid #cccccc;
+
+}
+
+.floor-selector {
+  padding: 20px;
+  border-bottom: 1px solid #cccccc;
+  display: flex;
+}
+
+/* Left Pane */
+.left-pane {
+  flex-basis: 100%;
+  /* Full width on small screens */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Independent vertical scrolling */
+  
+}
+
+.timetable-list {
+  overflow-y: auto;
+}
+
+/* Right Pane */
+.right-pane {
+  flex-grow: 1;
+  height: 100vh;
+  overflow-y: auto;
+  /* Independent vertical scrolling */
+  border-left: 1px solid #cccccc;
+  display: flex;
+  flex-direction: column;
+  /* padding: 20px; */
+}
+
+.muted {
+  color: #999999;
+}
+
+
+  .left-pane {
+    flex-basis: 100%;
+  }
+
+.date-divider {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  border-bottom: 1px solid #dddddd;
+  background-color: #cccccc;
+  text-align: center;
+}
+
+.lesson {
+  padding: 20px;
+  border-bottom: 1px solid #dddddd;
+}
+
+.lesson:hover {
+  background-color: #eeeeee;
+  cursor:pointer;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(1turn);
+  }
+}
