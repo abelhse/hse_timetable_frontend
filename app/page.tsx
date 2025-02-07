@@ -16,10 +16,10 @@ const moscowTime = new Intl.DateTimeFormat("en-US", {
 function TimetableListElement(lesson: any, isFav: boolean, handleFav) {
   const discipline = lesson.discipline?.replace('(рус)', '').replace('(анг)', '').trim()
 
-  let begin = moscowTime.format(new Date(lesson.begin));
-  let end = moscowTime.format(new Date(lesson.end));
+  const begin = moscowTime.format(new Date(lesson.begin));
+  const end = moscowTime.format(new Date(lesson.end));
 
-  let starColor = isFav ? "#ffde21" : "#000000";
+  const starColor = isFav ? "#ffde21" : "#000000";
 
   return (
     <div className="lesson" key={lesson.lesson_oid}>
@@ -43,8 +43,7 @@ const moscowDate = new Intl.DateTimeFormat("ru", {
   month: "long",
   day: "numeric",
   hour12: false,
-  weekday: 'long',
-  day: 'numeric'
+  weekday: 'long'
 });
 
 
@@ -56,16 +55,16 @@ function DateDivider(lessonDate: string) {
 
 
 function TimetableList(timetable, fav: Set<string>, handleFav) {
-  let rows = [];
+  const rows = [];
   let lastDate = '';
-  for (let lesson of timetable) {
-    let lessonDate = moscowDate.format(new Date(lesson.begin));
+  for (const lesson of timetable) {
+    const lessonDate = moscowDate.format(new Date(lesson.begin));
     if (!(lastDate === lessonDate)) {
       rows.push(DateDivider(lessonDate));
       lastDate = lessonDate;
     }
 
-    let isFav = fav.has(lesson.discipline_oid);
+    const isFav = fav.has(lesson.discipline_oid);
     rows.push(TimetableListElement(lesson, isFav, handleFav));
   }
 
@@ -79,11 +78,9 @@ function TimetableList(timetable, fav: Set<string>, handleFav) {
 
 async function fetchTimetable() {
   const now = new Date();
-  const currentTime = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-  const currentDate = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
-  let endOfToday = new Date(now.getTime());
+  const endOfToday = new Date(now.getTime());
   endOfToday.setHours(23, 59, 59, 999);
-  let startOfToday = new Date(now.getTime());
+  const startOfToday = new Date(now.getTime());
   startOfToday.setHours(0, 0, 0, 0);
 
   console.log(now.toISOString());
@@ -135,11 +132,11 @@ function Main() {
     return <div>Timetable is empty</div>;
   }
 
-  let handleFav = (discipline_oid: number, newIsFav: boolean) => {
+  const handleFav = (discipline_oid: number, newIsFav: boolean) => {
     if (newIsFav) {
       setFav(new Set([...fav, discipline_oid]));
     } else {
-      let newFav = new Set(fav);
+      const newFav = new Set(fav);
       newFav.delete(discipline_oid);
       setFav(newFav);
     }
