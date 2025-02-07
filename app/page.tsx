@@ -15,17 +15,16 @@ const moscowTime = new Intl.DateTimeFormat("en-US", {
 
 
 function TimetableListElement(
-  lesson: Tables<'lessons'>, 
-  isFav: boolean,
-  handleFav: (discipline_id: number, isNowFav: boolean) => void
-)
-{
+  lesson: Tables<'lessons'>,
+  isFavDiscipline: boolean,
+  handleFav: (disciplineOid: number, isNowFav: boolean) => void
+) {
   const discipline = lesson.discipline?.replace('(рус)', '').replace('(анг)', '').trim()
 
   const begin = moscowTime.format(new Date(lesson.begin!));
   const end = moscowTime.format(new Date(lesson.end!));
 
-  const starColor = isFav ? "#ffde21" : "#000000";
+  const starColor = isFavDiscipline ? "#ffde21" : "#000000";
 
   return (
     <div className="lesson" key={lesson.lesson_oid}>
@@ -33,9 +32,9 @@ function TimetableListElement(
         <p>{lesson.kind_of_work}</p>
         <p style={{ alignSelf: 'end' }}>{begin}&nbsp;-&nbsp;{end}</p>
       </div>
-      <div style={{ gap: "0.25em", fontWeight: 'bold', marginTop: '8px', marginBottom: '8px', display: "inline-flex"}}>
-      {discipline}
-      <Star style={{display: "inline", width: "1em", height: "1em"}} color={starColor} onClick={() => handleFav(lesson.discipline_oid!, !isFav)}/>
+      <div style={{ gap: "0.25em", fontWeight: 'bold', marginTop: '8px', marginBottom: '8px', display: "inline-flex" }}>
+        {discipline}
+        <Star style={{ display: "inline", width: "1em", height: "1em" }} color={starColor} onClick={() => handleFav(lesson.discipline_oid!, !isFavDiscipline)} />
       </div>
       <p>{lesson.auditorium}, {lesson.building} ({lesson.auditorium_amount})</p>
     </div>
@@ -60,7 +59,11 @@ function DateDivider(lessonDate: string) {
 }
 
 
-function TimetableList(timetable: Tables<'lessons'>[], fav: Set<number>, handleFav: (discipline_id: number, isNowFav: boolean) => void) {
+function TimetableList(
+  timetable: Tables<'lessons'>[],
+  favDisciplineOids: Set<number>,
+  handleFav: (discipline_oid: number, isNowFav: boolean) => void
+) {
   const rows = [];
   let lastDate = '';
   for (const lesson of timetable) {
@@ -70,7 +73,7 @@ function TimetableList(timetable: Tables<'lessons'>[], fav: Set<number>, handleF
       lastDate = lessonDate;
     }
 
-    const isFav = fav.has(lesson.discipline_oid!);
+    const isFav = favDisciplineOids.has(lesson.discipline_oid!);
     rows.push(TimetableListElement(lesson, isFav, handleFav));
   }
 
