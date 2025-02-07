@@ -3,6 +3,7 @@
 import { supabase } from "@/app/initSupabase";
 import { Loader, Star } from "lucide-react";
 import { Tables } from '@/database.types'
+import { useEffect, useState } from "react";
 
 
 const moscowTime = new Intl.DateTimeFormat("en-US", {
@@ -21,8 +22,8 @@ function TimetableListElement(
 {
   const discipline = lesson.discipline?.replace('(рус)', '').replace('(анг)', '').trim()
 
-  const begin = moscowTime.format(new Date(lesson.begin));
-  const end = moscowTime.format(new Date(lesson.end));
+  const begin = moscowTime.format(new Date(lesson.begin!));
+  const end = moscowTime.format(new Date(lesson.end!));
 
   const starColor = isFav ? "#ffde21" : "#000000";
 
@@ -34,7 +35,7 @@ function TimetableListElement(
       </div>
       <div style={{ gap: "0.25em", fontWeight: 'bold', marginTop: '8px', marginBottom: '8px', display: "inline-flex"}}>
       {discipline}
-      <Star style={{display: "inline", width: "1em", height: "1em"}} color={starColor} onClick={() => handleFav(lesson.discipline_oid, !isFav)}/>
+      <Star style={{display: "inline", width: "1em", height: "1em"}} color={starColor} onClick={() => handleFav(lesson.discipline_oid!, !isFav)}/>
       </div>
       <p>{lesson.auditorium}, {lesson.building} ({lesson.auditorium_amount})</p>
     </div>
@@ -59,17 +60,17 @@ function DateDivider(lessonDate: string) {
 }
 
 
-function TimetableList(timetable, fav: Set<string>, handleFav) {
+function TimetableList(timetable: Tables<'lessons'>[], fav: Set<number>, handleFav: (discipline_id: number, isNowFav: boolean) => void) {
   const rows = [];
   let lastDate = '';
   for (const lesson of timetable) {
-    const lessonDate = moscowDate.format(new Date(lesson.begin));
+    const lessonDate = moscowDate.format(new Date(lesson.begin!));
     if (!(lastDate === lessonDate)) {
       rows.push(DateDivider(lessonDate));
       lastDate = lessonDate;
     }
 
-    const isFav = fav.has(lesson.discipline_oid);
+    const isFav = fav.has(lesson.discipline_oid!);
     rows.push(TimetableListElement(lesson, isFav, handleFav));
   }
 
@@ -104,7 +105,7 @@ async function fetchTimetable() {
 
 
 function Main() {
-  const [timetable, setTimetable] = useState(null);
+  const [timetable, setTimetable] = useState<Tables<'lessons'>[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [fav, setFav] = useState<Set<number>>(new Set()); // TODO: local storage
   useEffect(() => {
@@ -114,7 +115,7 @@ function Main() {
         console.log('error', error);
       else {
         setLoading(false);
-        setTimetable(data);
+        setTimetable(data!);
       }
     }
     _fetchTimetable();
@@ -133,18 +134,18 @@ function Main() {
     return <div>Error (timetable is null)</div>;
   }
 
-  if (timetable.length == 0) {
+  if (timetable!.length == 0) {
     return <div>Timetable is empty</div>;
   }
 
   const handleFav = (discipline_oid: number, newIsFav: boolean) => {
+    const newFav = new Set(fav);
     if (newIsFav) {
-      setFav(new Set([...fav, discipline_oid]));
+      newFav.add(discipline_oid);
     } else {
-      const newFav = new Set(fav);
       newFav.delete(discipline_oid);
-      setFav(newFav);
     }
+    setFav(newFav);
   }
 
   return TimetableList(timetable, fav, handleFav);
