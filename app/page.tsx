@@ -13,7 +13,7 @@ const moscowTime = new Intl.DateTimeFormat("en-US", {
 });
 
 
-function TimetableListElement(lesson: any, isFav: boolean, handleFav) {
+function TimetableListElement(lesson, isFav: boolean, handleFav) {
   const discipline = lesson.discipline?.replace('(рус)', '').replace('(анг)', '').trim()
 
   const begin = moscowTime.format(new Date(lesson.begin));
