@@ -27,6 +27,9 @@ concurrency:
 jobs:
   # Build job
   build:
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://wjksywzawrzdkrguezmh.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqa3N5d3phd3J6ZGtyZ3Vlem1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg2MTQxNzIsImV4cCI6MjA1NDE5MDE3Mn0.MGHYnwYc_O-wf3TYVqtP7hcMzHbOh_E-2MPmqX1i0dg
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -76,12 +79,6 @@ jobs:
       - name: 'printenv'
         run: |
           printenv
-      - name: 'Create env file'
-        run: |
-          touch .env
-          echo NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL >> .env
-          echo NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY >> .env
-          cat .env
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
