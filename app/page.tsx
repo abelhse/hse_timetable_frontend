@@ -16,7 +16,7 @@ const moscowTime = new Intl.DateTimeFormat("en-US", {
 function TimetableListElement(
   lesson: Tables<'lessons'>, 
   isFav: boolean,
-  handleFav: (discipline_id: any, isNowFav: boolean) => void
+  handleFav: (discipline_id: number, isNowFav: boolean) => void
 )
 {
   const discipline = lesson.discipline?.replace('(рус)', '').replace('(анг)', '').trim()
