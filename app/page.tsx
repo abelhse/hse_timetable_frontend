@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from "react";
 import { supabase } from "@/app/initSupabase";
 import { Loader, Star } from "lucide-react";
+import { Tables } from '@/database.types'
 
 
 const moscowTime = new Intl.DateTimeFormat("en-US", {
@@ -13,7 +13,12 @@ const moscowTime = new Intl.DateTimeFormat("en-US", {
 });
 
 
-function TimetableListElement(lesson, isFav: boolean, handleFav) {
+function TimetableListElement(
+  lesson: Tables<'lessons'>, 
+  isFav: boolean,
+  handleFav: (discipline_id: any, isNowFav: boolean) => void
+)
+{
   const discipline = lesson.discipline?.replace('(рус)', '').replace('(анг)', '').trim()
 
   const begin = moscowTime.format(new Date(lesson.begin));
