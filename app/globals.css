@@ -32,7 +32,6 @@ html {
 .search {
   padding: 20px;
   border-bottom: 1px solid #cccccc;
-
 }
 
 .floor-selector {
@@ -49,7 +48,6 @@ html {
   display: flex;
   flex-direction: column;
   /* Independent vertical scrolling */
-  
 }
 
 .timetable-list {
@@ -73,18 +71,45 @@ html {
 }
 
 
-  .left-pane {
-    flex-basis: 100%;
-  }
+.left-pane {
+  flex-basis: 100%;
+}
 
 .date-divider {
   padding-left: 20px;
   padding-right: 20px;
-  padding-bottom: 10px;
-  padding-top: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
   border-bottom: 1px solid #dddddd;
   background-color: #cccccc;
-  text-align: center;
+
+
+}
+
+.filters {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
+  /* padding: 20px; */
+}
+
+.filter {
+  border-radius: 12px;
+  line-height: 20px;
+  border: none;
+  padding: 7px 12px 7px 12px;
+  cursor: pointer;
+}
+
+.filter-active {
+  color: #a73afd;
+  background-color: #f7ecff;
+}
+
+.filter-inactive {
+  color: #242424;
+  background-color: #f1f1f5;
 }
 
 .lesson {
@@ -94,7 +119,7 @@ html {
 
 .lesson:hover {
   background-color: #eeeeee;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 @keyframes spinner {

@@ -25,11 +25,12 @@ function TimetableListElement(
   const end = moscowTime.format(new Date(lesson.end!));
 
   const starColor = isFavDiscipline ? "#ffde21" : "#000000";
+  const kindOfWork = lesson.kind_of_work?.replace('Научно-исследовательский семинар', 'НИС')
 
   return (
     <div className="lesson" key={lesson.lesson_oid}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <p>{lesson.kind_of_work}</p>
+        <p>{kindOfWork}</p>
         <p style={{ alignSelf: 'end' }}>{begin}&nbsp;-&nbsp;{end}</p>
       </div>
       <div style={{ gap: "0.25em", fontWeight: 'bold', marginTop: '8px', marginBottom: '8px', display: "inline-flex" }}>
@@ -85,25 +86,30 @@ function TimetableList(
 }
 
 
-async function fetchTimetable() {
-  const now = new Date();
-  const endOfToday = new Date(now.getTime());
-  endOfToday.setHours(23, 59, 59, 999);
-  const startOfToday = new Date(now.getTime());
-  startOfToday.setHours(0, 0, 0, 0);
-
-  console.log(now.toISOString());
-  console.log(endOfToday.toISOString());
-
-  return await supabase
+async function fetchTimetable(
+  filterEndFrom: Date,
+  filterEndTo: Date,
+  filterBuildingLike: string,
+  filterHideOnline: boolean
+) {
+  let resp = supabase
     .from('lessons')
     .select('*')
-    .like('building', '%Покровский%')
-    .not('auditorium', 'like', '%Online%')
+    .like('building', filterBuildingLike)
+    .gte('end', filterEndFrom.toISOString())
+    .lt('end', filterEndTo.toISOString())
     .order('begin')
-    .order('auditorium_amount', { ascending: false })
-    .gte('end', startOfToday.toISOString())
-    .lt('end', endOfToday.toISOString())
+    .order('auditorium_amount', { ascending: false });
+
+  if (filterHideOnline) {
+    resp = resp.not('auditorium', 'like', '%Online%');
+  }
+
+  return await resp;
+}
+
+function Filters() {
+  return 
 }
 
 
@@ -111,19 +117,31 @@ function Main() {
   const [timetable, setTimetable] = useState<Tables<'lessons'>[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [fav, setFav] = useState<Set<number>>(new Set()); // TODO: local storage
+
+  const now = new Date();
+  const endOfTomorrow = new Date(now.getTime());
+  endOfTomorrow.setDate(endOfTomorrow.getDate() + 1);
+  endOfTomorrow.setHours(23, 59, 59, 999);
+  const [filterEndFrom, setFilterEndFrom] = useState<Date>(now);
+  const [filterEndTo, setFilterEndTo] = useState<Date>(endOfTomorrow);
+  const [filterBuildingLike, setFilterBuidingLike] = useState<string>('%Покровский%');
+  const [filterHideOnline, setFilterHideOnline] = useState<boolean>(true);
+
   useEffect(() => {
     const _fetchTimetable = async () => {
-      const { data, error } = await fetchTimetable();
+      const { data, error } = await fetchTimetable(filterEndFrom, filterEndTo, filterBuildingLike, filterHideOnline);
       if (error)
         console.log('error', error);
       else {
         setLoading(false);
         setTimetable(data!);
       }
-    }
+    };
+
     _fetchTimetable();
     console.log('fetched');
-  }, []);
+  }, [filterEndFrom, filterEndTo, filterBuildingLike, filterHideOnline]);
+
 
   if (loading) {
     return (
@@ -139,7 +157,7 @@ function Main() {
 
   if (timetable!.length == 0) {
     return <div>Timetable is empty</div>;
-  }
+  } 
 
   const handleFav = (discipline_oid: number, newIsFav: boolean) => {
     const newFav = new Set(fav);
@@ -151,7 +169,21 @@ function Main() {
     setFav(newFav);
   }
 
-  return TimetableList(timetable, fav, handleFav);
+  let onlineFilter = (
+    <button onClick={() => { setFilterHideOnline(!filterHideOnline); setLoading(true); }} className={"filter filter-" + (filterHideOnline ? "active" : "inactive")}>
+      Скрыть ONLINE
+    </button>
+  )
+
+  let filters = (
+    <div className="filters">
+      {onlineFilter}
+    </div>
+  )
+  return <>
+    {filters}
+    {TimetableList(timetable, fav, handleFav)}
+  </>
 }
 
 export default Main;
