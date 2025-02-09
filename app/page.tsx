@@ -4,6 +4,7 @@ import { supabase } from "@/app/initSupabase";
 import { Loader, Star } from "lucide-react";
 import { Tables } from '@/database.types'
 import { useEffect, useState } from "react";
+import { on } from "events";
 
 
 const moscowTime = new Intl.DateTimeFormat("en-US", {
@@ -24,7 +25,8 @@ function TimetableListElement(
   const begin = moscowTime.format(new Date(lesson.begin!));
   const end = moscowTime.format(new Date(lesson.end!));
 
-  const starColor = isFavDiscipline ? "#ffde21" : "#000000";
+  const starStroke = isFavDiscipline ? "#a73afd" : "#242424";
+  const starFill = isFavDiscipline ? "#a73afd" : "#ffffff00";
   const kindOfWork = lesson.kind_of_work?.replace('Научно-исследовательский семинар', 'НИС')
 
   return (
@@ -35,9 +37,11 @@ function TimetableListElement(
       </div>
       <div style={{ gap: "0.25em", fontWeight: 'bold', marginTop: '8px', marginBottom: '8px', display: "inline-flex" }}>
         {discipline}
-        <Star style={{ display: "inline", width: "1em", height: "1em" }} color={starColor} onClick={() => handleFav(lesson.discipline_oid!, !isFavDiscipline)} />
       </div>
-      <p>{lesson.auditorium}, {lesson.building} ({lesson.auditorium_amount})</p>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <p>{lesson.auditorium}, {lesson.building} ({lesson.auditorium_amount})</p>
+        <Star style={{ display: "inline", width: "1em", height: "1em", cursor: "pointer" }} fill={starFill} color={starStroke} onClick={() => handleFav(lesson.discipline_oid!, !isFavDiscipline)} />
+      </div>
     </div>
   );
 }
@@ -89,8 +93,7 @@ function TimetableList(
 async function fetchTimetable(
   filterEndFrom: Date,
   filterEndTo: Date,
-  filterBuildingLike: string,
-  filterHideOnline: boolean
+  filterBuildingLike: string
 ) {
   let resp = supabase
     .from('lessons')
@@ -101,10 +104,6 @@ async function fetchTimetable(
     .order('begin')
     .order('auditorium_amount', { ascending: false });
 
-  if (filterHideOnline) {
-    resp = resp.not('auditorium', 'like', '%Online%');
-  }
-
   return await resp;
 }
 
@@ -114,7 +113,7 @@ function Filters() {
 
 
 function Main() {
-  const [timetable, setTimetable] = useState<Tables<'lessons'>[] | null>(null);
+  let [timetable, setTimetable] = useState<Tables<'lessons'>[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [fav, setFav] = useState<Set<number>>(new Set()); // TODO: local storage
 
@@ -126,6 +125,7 @@ function Main() {
   const [filterEndTo, setFilterEndTo] = useState<Date>(endOfTomorrow);
   const [filterBuildingLike, setFilterBuidingLike] = useState<string>('%Покровский%');
   const [filterHideOnline, setFilterHideOnline] = useState<boolean>(true);
+  const [filterOnlyFav, setFilterOnlyFav] = useState<boolean>(false);
 
   useEffect(() => {
     const _fetchTimetable = async () => {
@@ -155,9 +155,17 @@ function Main() {
     return <div>Error (timetable is null)</div>;
   }
 
-  if (timetable!.length == 0) {
-    return <div>Timetable is empty</div>;
-  } 
+  if (filterOnlyFav) {
+    timetable = timetable.filter((lesson) => fav.has(lesson.discipline_oid!));
+  }
+
+  if (filterHideOnline) {
+    timetable = timetable.filter((lesson) => (-1 === lesson.auditorium?.search("Online")));
+  }
+
+  // if (timetable!.length == 0) {
+  //   return <div>Timetable is empty</div>;
+  // } 
 
   const handleFav = (discipline_oid: number, newIsFav: boolean) => {
     const newFav = new Set(fav);
@@ -170,18 +178,22 @@ function Main() {
   }
 
   let onlineFilter = (
-    <button onClick={() => { setFilterHideOnline(!filterHideOnline); setLoading(true); }} className={"filter filter-" + (filterHideOnline ? "active" : "inactive")}>
-      Скрыть ONLINE
+    <button onClick={() => { setFilterHideOnline(!filterHideOnline); }} className={"filter filter-" + (filterHideOnline ? "active" : "inactive")}>
+      OFFLINE
     </button>
   )
 
-  let filters = (
-    <div className="filters">
-      {onlineFilter}
-    </div>
+  let onlyFavFilter  = (
+    <button onClick={() => { setFilterOnlyFav(!filterOnlyFav); }} className={"filter filter-" + (filterOnlyFav ? "active" : "inactive")}>
+      <Star style={{ width: "1em", height: "1em" }}/> Отмеченное
+    </button>
   )
+
+  let filters = [onlineFilter, onlyFavFilter];
   return <>
-    {filters}
+    <div className="filters">
+      {...filters}
+    </div>
     {TimetableList(timetable, fav, handleFav)}
   </>
 }

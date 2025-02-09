@@ -82,6 +82,9 @@ html {
   padding-top: 5px;
   border-bottom: 1px solid #dddddd;
   background-color: #cccccc;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 
 
 }
@@ -91,6 +94,8 @@ html {
   padding-bottom: 10px;
   padding-right: 20px;
   padding-left: 20px;
+  gap: 8px;
+  display: flex;
   /* padding: 20px; */
 }
 
@@ -100,6 +105,9 @@ html {
   border: none;
   padding: 7px 12px 7px 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .filter-active {
