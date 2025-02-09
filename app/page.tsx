@@ -129,7 +129,7 @@ function Main() {
 
   useEffect(() => {
     const _fetchTimetable = async () => {
-      const { data, error } = await fetchTimetable(filterEndFrom, filterEndTo, filterBuildingLike, filterHideOnline);
+      const { data, error } = await fetchTimetable(filterEndFrom, filterEndTo, filterBuildingLike);
       if (error)
         console.log('error', error);
       else {
