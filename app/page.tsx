@@ -107,15 +107,22 @@ async function fetchTimetable(
   return await resp;
 }
 
-function Filters() {
-  return 
-}
-
 
 function Main() {
   let [timetable, setTimetable] = useState<Tables<'lessons'>[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [fav, setFav] = useState<Set<number>>(new Set()); // TODO: local storage
+
+  const [fav, setFav] = useState<Set<number>>(() => {
+    let savedFav = null;
+    if (typeof window !== "undefined") {
+      savedFav = localStorage.getItem('fav');
+    }
+    return (savedFav !== null) ? new Set(JSON.parse(savedFav)) : new Set();
+  });
+
+  useEffect(() => {
+    localStorage.setItem('fav', JSON.stringify(Array.from(fav)));
+  }, [fav]);
 
   const now = new Date();
   const endOfTomorrow = new Date(now.getTime());
@@ -183,9 +190,9 @@ function Main() {
     </button>
   )
 
-  let onlyFavFilter  = (
+  let onlyFavFilter = (
     <button onClick={() => { setFilterOnlyFav(!filterOnlyFav); }} className={"filter filter-" + (filterOnlyFav ? "active" : "inactive")}>
-      <Star style={{ width: "1em", height: "1em" }}/> Отмеченное
+      <Star style={{ width: "1em", height: "1em" }} /> Отмеченное
     </button>
   )
 
