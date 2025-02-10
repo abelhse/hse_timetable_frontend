@@ -4,9 +4,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
-/* https://chatgpt.com/c/670a9418-8e0c-800d-a4ae-49f571fada5d */
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -24,9 +21,7 @@ html {
   display: flex;
   flex-direction: row;
   height: 100vh;
-  /* Full height of the viewport */
   overflow: hidden;
-  /* Prevent body scrolling */
 }
 
 .search {
@@ -40,30 +35,24 @@ html {
   display: flex;
 }
 
-/* Left Pane */
 .left-pane {
   flex-basis: 100%;
-  /* Full width on small screens */
   height: 100vh;
   display: flex;
   flex-direction: column;
-  /* Independent vertical scrolling */
 }
 
 .timetable-list {
   overflow-y: auto;
 }
 
-/* Right Pane */
 .right-pane {
   flex-grow: 1;
   height: 100vh;
   overflow-y: auto;
-  /* Independent vertical scrolling */
   border-left: 1px solid #cccccc;
   display: flex;
   flex-direction: column;
-  /* padding: 20px; */
 }
 
 .muted {
@@ -85,8 +74,6 @@ html {
   position: sticky;
   top: 0;
   z-index: 1;
-
-
 }
 
 .filters {
@@ -96,7 +83,6 @@ html {
   padding-left: 20px;
   gap: 8px;
   display: flex;
-  /* padding: 20px; */
 }
 
 .filter {
