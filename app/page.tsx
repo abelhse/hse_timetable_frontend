@@ -29,6 +29,13 @@ function TimetableListElement(
   const starFill = isFavDiscipline ? "#a73afd" : "#ffffff00";
   const kindOfWork = lesson.kind_of_work?.replace('Научно-исследовательский семинар', 'НИС')
 
+  const links = [];
+  for (const url of [lesson.url1, lesson.url2]) {
+    if (url) {
+      links.push(<a href={url}>link</a>);
+    }
+  }
+
   return (
     <div className="lesson" key={lesson.lesson_oid}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -42,6 +49,7 @@ function TimetableListElement(
         <p>{lesson.auditorium}, {lesson.building} ({lesson.auditorium_amount})</p>
         <Star style={{ display: "inline", width: "1em", height: "1em", cursor: "pointer" }} fill={starFill} color={starStroke} onClick={() => handleFav(lesson.discipline_oid!, !isFavDiscipline)} />
       </div>
+      <div style={{display: "flex"}}>{ links }</div>
     </div>
   );
 }
