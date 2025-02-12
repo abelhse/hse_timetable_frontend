@@ -49,7 +49,7 @@ function TimetableListElement(
         <p>{lesson.auditorium}, {lesson.building} ({lesson.auditorium_amount})</p>
         <Star style={{ display: "inline", width: "1em", height: "1em", cursor: "pointer" }} fill={starFill} color={starStroke} onClick={() => handleFav(lesson.discipline_oid!, !isFavDiscipline)} />
       </div>
-      <div style={{display: "flex"}}>{ links }</div>
+      <div style={{display: "flex"}}>{ links } {lesson.note} </div>
     </div>
   );
 }
