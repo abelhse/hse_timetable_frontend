@@ -40,7 +40,6 @@ function TimetableListElement(
     <div className="lesson" key={lesson.lesson_oid}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <p>{kindOfWork}</p>
-        <p style={{ alignSelf: 'end' }}>{begin}&nbsp;-&nbsp;{end}</p>
       </div>
       <div style={{ gap: "0.25em", fontWeight: 'bold', marginTop: '8px', marginBottom: '8px', display: "inline-flex" }}>
         {discipline}
@@ -57,7 +56,6 @@ function TimetableListElement(
 
 const moscowDate = new Intl.DateTimeFormat("ru", {
   timeZone: "Europe/Moscow",
-  year: "numeric",
   month: "long",
   day: "numeric",
   hour12: false,
@@ -65,9 +63,9 @@ const moscowDate = new Intl.DateTimeFormat("ru", {
 });
 
 
-function DateDivider(lessonDate: string) {
+function DateDivider(lessonDate: string, lessonTime: string) {
   return (
-    <div className="date-divider" key={lessonDate}>{lessonDate}</div>
+    <div className="date-divider" key={lessonDate + ' ' + lessonTime}>{lessonDate}<br/>{lessonTime}</div>
   )
 }
 
@@ -79,11 +77,16 @@ function TimetableList(
 ) {
   const rows = [];
   let lastDate = '';
+  let lastTime = '';
   for (const lesson of timetable) {
     const lessonDate = moscowDate.format(new Date(lesson.begin!));
-    if (!(lastDate === lessonDate)) {
-      rows.push(DateDivider(lessonDate));
+    const begin = moscowTime.format(new Date(lesson.begin!));
+    const end = moscowTime.format(new Date(lesson.end!));
+    const lessonTime = `${begin}\xa0-\xa0${end}`;
+    if (!(lastDate === lessonDate && lastTime === lessonTime)) {
+      rows.push(DateDivider(lessonDate, lessonTime));
       lastDate = lessonDate;
+      lastTime = lessonTime;
     }
 
     const isFav = favDisciplineOids.has(lesson.discipline_oid!);
