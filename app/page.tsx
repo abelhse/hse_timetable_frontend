@@ -113,6 +113,7 @@ async function fetchTimetable(
     .gte('end', filterEndFrom.toISOString())
     .lt('end', filterEndTo.toISOString())
     .order('begin')
+    .order('end')
     .order('auditorium_amount', { ascending: false });
 
   return await resp;
