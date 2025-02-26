@@ -209,12 +209,16 @@ function Main() {
   )
 
   let filters = [onlineFilter, onlyFavFilter];
-  return <>
-    <div className="filters">
-      {...filters}
+  return (
+    <div className="timetable-element">
+      <div className="filters">
+        {...filters}
+      </div>
+      <div className="list-container">
+        {TimetableList(timetable, fav, handleFav)}
+      </div>
     </div>
-    {TimetableList(timetable, fav, handleFav)}
-  </>
+  );
 }
 
 export default Main;
